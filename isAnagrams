@@ -1,0 +1,62 @@
+//Question: decide if two strings are anagrams or not.
+//Below is the answer provided by the author of the book
+    public static boolean anagram(String s, String t) { 
+      if (s.length() != t.length()) return false; 
+      int[] letters = new int[256]; 
+      int num_unique_chars = 0; 
+      int num_completed_t = 0; 
+      char[] s_array = s.toCharArray(); 
+      for (char c : s_array) { 
+          // count number of each char in s. 
+            if (letters[c] == 0) ++num_unique_chars; 
+            ++letters[c]; 
+      } 
+     
+      for (int i = 0; i < t.length(); ++i) { 
+         int c = (int) t.charAt(i); 
+            if (letters[c] == 0) { 
+            // Found more of char c in t than in s. 
+            return false; 
+            } 
+          --letters[c];   
+          if (letters[c] == 0) { 
+            ++num_completed_t; 
+            if (num_completed_t == num_unique_chars) { 
+            // it’s a match if t has been processed completely 
+            return i == t.length() - 1; 
+            } 
+          } 
+        }
+        return false; 
+    }
+    
+// I personally think the var num_unique_chars is useless, here is the reason,
+// as we have checked the length of two arrays already, so there only exists two possible cases for false
+// 1. array 2 has letter that not exist in array 1
+// 2. array 2 has all same letters but different count(and as the length is same, so it must be some letters are less while others are more
+// both of cases will return false at line 17
+// which means, if the code process between line 24-26, 
+// then two arrays must be identical. Thus we don't need var num_completed and num_unique
+// Here is the updated version
+
+    public static boolean anagram(String s, String t) { 
+      if (s.length() != t.length()) return false; 
+      int[] letters = new int[256]; 
+      
+     
+      char[] s_array = s.toCharArray(); 
+      for (char c : s_array) { 
+    
+            ++letters[c]; 
+      } 
+     
+      for (int i = 0; i < t.length(); ++i) { 
+         int c = (int) t.charAt(i); 
+            if (letters[c] == 0) { 
+            // Found more of char c in t than in s. 
+            return false; 
+            } 
+          --letters[c];   
+        }
+        return true; 
+    }
