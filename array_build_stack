@@ -1,0 +1,46 @@
+Describe how you could use a single array to implement three stacks
+
+/**Solution: One idea is to seperate the array into three equal chunk. but if one of them still have space left while another
+/**is already full, space will be wasted
+/**So in the following method, any stack can grow as long as there is any free space in the array 
+/** but there is a bug for the provided answer, during pop() and collect space back
+Class Stack{
+
+    int stackSize = 300; 
+    int indexUsed = 0; 
+    int[] stackPointer = {-1,-1,-1}; 
+    StackNode[] buffer = new StackNode[stackSize * 3]; 
+    void push(int stackNum, int value) { 
+        int lastIndex = stackPointer[stackNum]; 
+        stackPointer[stackNum] = indexUsed; 
+        indexUsed++; 
+        buffer[stackPointer[stackNum]]=new StackNode(lastIndex,value); 
+    } 
+    /** for line 24, even we set buffer[lastIndex] = null, it cannot delete this position and shift all elements right to it left
+    /**so it still cannot be used again, and as indexUsed decrese pointing to the allocated position in array
+    /**it will rewrite the data in next push() operation
+    int pop(int stackNum) { 
+        int value = buffer[stackPointer[stackNum]].value; 
+        int lastIndex = stackPointer[stackNum]; 
+        stackPointer[stackNum] = buffer[stackPointer[stackNum]].previous; 
+        buffer[lastIndex] = null; 
+        indexUsed--; 
+        return value; 
+    } 
+    
+    int peek(int stack) { 
+    return buffer[stackPointer[stack]].value; 
+    } 
+    
+    boolean isEmpty(int stackNum) { 
+    return stackPointer[stackNum] == -1; 
+    } 
+}
+class StackNode { 
+    public int previous; 
+    public int value; 
+    public StackNode(int p, int v){
+       value = v; 
+       previous = p; 
+       } 
+    }
