@@ -1,27 +1,45 @@
-//Ques 2.4: You have two numbers represented by a linked list, where each node contains a single digit   
-//The digits are stored in reverse order, such that the 1’s digit is at the head of the list   
-//Write a function that adds the two numbers and returns the sum as a linked list 
-//EXAMPLE Input: (3 -> 1 -> 5), (5 -> 9 -> 2) Output: 8 -> 0 -> 8 
+//Ques 2.4: You have two numbers represented by a linked list, where each node contains a single digit
+//The digits are stored in reverse order, such that the 1’s digit is at the head of the list
+//Write a function that adds the two numbers and returns the sum as a linked list
+//EXAMPLE Input: (3 -> 1 -> 5), (5 -> 9 -> 2) Output: 8 -> 0 -> 8
 
-Answer provided: 
- LinkedListNode addLists(LinkedListNode l1, LinkedListNode l2, int carry) { 
- //line 9-11 has a bug, what if the carry is 1? So we should not return null but depends on the carry here
-    //if (l1 == null && l2 == null) { 
-    //    return null; 
-    //    } 
+Answer provided (corrected):
+LinkedListNode addLists(LinkedListNode l1, LinkedListNode l2, int carry) {
+    //line 9-11 has a bug, what if the carry is 1? So we should not return null but depends on the carry here
+    //if (l1 == null && l2 == null) {
+    //    return null;
+    //    }
     //here is the corrected version
-    LinkedListNode result = new LinkedListNode(carry, null, null); 
-    if(l1 == null && l2 == null){
-        return result;
+    LinkedListNode result = new LinkedListNode(carry, null, null);
+    if(l1 == null && l2 == null) return result;
+    int value = carry;
+    if (l1 != null) value += l1.data;
+    if (l2 != null) value += l2.data;
+    result.data = value % 10;
+    LinkedListNode more = addLists(l1 == null ? null : l1.next, l2 == null ? null : l2.next, value > 10 ? 1 : 0);
+    result.setNext(more);
+    return result;
+}
+
+Another version without using recursion:
+private static LinkedListNode addLists(LinkedListNode l1, LinkedListNode l2) {
+    if (l1 == null) return l2;
+    if (l2 == null) return l1;
+    LinkedListNode result = new LinkedListNode(0, null), curr = result;
+    int carry = 0, value;
+    while ((l1 != null && l1.next != null) || (l2 != null && l2.next != null)) {
+        value = (l1 == null ? 0 : l1.data) + (l2 == null ? 0 : l2.data) + carry;
+        carry = value / 10;
+        curr.data = value % 10;
+        curr.next = new LinkedListNode(0, null);
+        curr = curr.next;
+        if (l1 != null) l1 = l1.next;
+        if (l2 != null) l2 = l2.next;
     }
-    int value = carry; 
-    if (l1 != null) { 
-        value += l1.data;  } 
-    if (l2 != null) { 
-        12   value += l2.data; 
-        } 
-    result.data = value % 10; 
-       LinkedListNode more = addLists(l1 == null ? null : l1.next, l2 == null ? null : l2.next, value > 10 ? 1 : 0); 
-    result.setNext(more); 
-    return result; 
-    }
+    value = (l1 == null ? 0 : l1.data) + (l2 == null ? 0 : l2.data) + carry;
+    carry = value / 10;
+    curr.data = value % 10;
+    if (carry != 0) curr.next = new LinkedListNode(carry, null);
+    else curr.next = null;
+    return result;
+}
