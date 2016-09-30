@@ -1,0 +1,101 @@
+// Given two words (start and end), and a dictionary, find all shortest transformation sequence(s) from start to end, such that:
+
+//Only one letter can be changed at a time
+//Each intermediate word must exist in the dictionary
+// Notice：
+	All words have the same length.
+	All words contain only lowercase alphabetic characters.
+	
+// Solutions: Applying dfs to find the shortest length, then use bfs to collect all possible paths
+
+public List<List<String>> findLadders(String start, String end, Set<String> dict) {
+        // write your code here 
+      
+        List<List<String>> list = new ArrayList<List<String>>();
+        
+        int level = 1;
+        int shortLevel = Integer.MAX_VALUE;
+        Queue<String> queue = new LinkedList<>();
+        HashMap<String, List<List<String>>> map = new HashMap<>();
+        HashSet<String> visited = new HashSet<>();
+        List<String> firstList = new ArrayList<>();
+        firstList.add(start);
+        list.add(firstList);
+        map.put(start, list);
+        queue.offer(start);
+        while(level < shortLevel && !queue.isEmpty()){
+            int size = queue.size();
+            HashSet<String> curr = new HashSet<>();
+            for(int i = 0; i<size;i++){
+                String str = queue.poll();
+                for(String next: getList(str)){
+                    if(next.equals(end)){
+                        shortLevel = level;
+                       
+                        if(map.containsKey(next)){
+                         List<List<String>> newList = map.get(next);
+                        for(List<String> preList: map.get(str)){
+                            List tmp = new ArrayList(preList);
+                            tmp.add(next);
+                            newList.add(tmp);
+                        }
+                        map.put(next,newList);
+                    }
+                        else{
+                            List<List<String>> newList = new ArrayList<List<String>>();
+                            for(List<String> preList: map.get(str)){
+                              List tmp = new ArrayList(preList);
+                            tmp.add(next);
+                            newList.add(tmp);
+                            }
+                            map.put(next, newList);
+                        }
+                    }
+                    else if(dict.contains(next) && !visited.contains(next)){
+                        if(!curr.contains(next)){
+                            curr.add(next);
+                            queue.offer(next);
+                        }
+                         if(map.containsKey(next)){
+                         List<List<String>> newList = map.get(next);
+                        for(List<String> preList:map.get(str)){
+                          List tmp = new ArrayList(preList);
+                            tmp.add(next);
+                            newList.add(tmp);
+                        }
+                        map.put(next,newList);
+                    }
+                        else{
+                            List<List<String>> newList = new ArrayList<List<String>>();
+                            for(List<String> preList: map.get(str)){
+                                List tmp = new ArrayList(preList);
+                            tmp.add(next);
+                            newList.add(tmp);
+                            }
+                            map.put(next, newList);
+                        }
+                    }
+                }
+            }
+            visited.addAll(curr);
+            level ++;
+        }
+        if(shortLevel == Integer.MAX_VALUE){
+            return list;
+        }
+        return map.get(end);
+    }
+    private ArrayList<String> getList(String str){
+        
+        ArrayList<String> result = new ArrayList<>();
+        for(int i = 0; i<str.length(); i++){
+            char[] charArray = str.toCharArray();
+            for(char c = 'a'; c<='z'; c++){
+                if(c!= str.charAt(i)){
+                    charArray[i] = c;
+                    result.add(new String(charArray));
+                }
+            }
+        }
+        return result;
+    }
